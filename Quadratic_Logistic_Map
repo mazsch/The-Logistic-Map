@@ -1,0 +1,58 @@
+clc
+clear
+close all
+
+% by MAZSCH Oct 2020
+
+%% The Quadratic Logistic Map
+
+N=10000000; %The total number of points
+n=3000;    %The number of points before the r_threshhold
+max_r=4;   %The solution diverges for growth ratios greater than 4
+r_threshhold=0.5;  %The threshhold for coarse increament (before chaotic bifurications)
+r_inc_cor=max_r/n; %Coarse increment
+r_inc_fin=max_r/N; %Fine increment
+% The growth ratio vector (free variable)
+r_vect = [0:r_inc_cor:r_threshhold-r_inc_cor, r_threshhold:r_inc_fin:4];
+% The long-termed balanced population function
+y=zeros(length(r_vect),1);
+counter=1:length(r_vect);
+
+%% The Main Loop
+% Parallel for-loop for gradually increasing the growth ratio
+
+parfor j =counter
+    
+    r = r_vect(j);   
+    
+    a=0.2; % The initial population
+    
+    % Finding the long-term population (random bound is to capture chaotic
+    % oscillations
+    for i=1:200+randi(80,1)  
+    %***************************************************
+    b=r*a*(1-a); % "The Quadratic Logistic Map" function
+    %***************************************************
+    % Recursive Update
+    a=b;
+    
+    end
+    
+    % Balanced Population
+    y(j)=b;
+    
+end
+
+%% Plotting
+
+scatter(r_vect,y,0.3,'filled','w')
+hold on
+xlim([0,max_r]);
+set(gca,'Color','k')
+title('The Quadratic Logistic Map','interpreter','latex','FontSize',15)
+xlabel('$r$','interpreter','latex','FontSize',14)
+ylabel('$x$','interpreter','latex','FontSize',14)
+dim = [0.2 0.6 0.3 0.3];
+str={'$x_{n+1}=rx_n(1-x_n)$'};
+annotation('textbox',dim,'interpreter','latex','String',str,'FitBoxToText','on','FontSize',15,'Color','w');
+clear a b i j counter
